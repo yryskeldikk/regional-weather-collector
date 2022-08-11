@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.meta.service: $COLLECTOR_NAME
+    name: $COLLECTOR_NAME
+    service: collector
+    tier: backend
+    eck-log: "yes"
+  name: $COLLECTOR_NAME
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.meta.service: $COLLECTOR_NAME
+      name: $COLLECTOR_NAME
+      service: collector
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.meta.service: $COLLECTOR_NAME
+        name: $COLLECTOR_NAME
+        service: collector
+        tier: backend
+        eck-log: "yes"
+    spec:
+      containers:
+        - name: $COLLECTOR_NAME
+          image: $DOCKER_REPO/$COLLECTOR_NAME:$VERSION
+          imagePullPolicy: "Always"
+          #imagePullPolicy: "IfNotPresent"
+          env:
+            - name: JAVA_OPTIONS
+              value: "-Xmx840m -Xms640m"
+          resources:
+            limits:
+              cpu: "750m"
+              memory: "1680Mi"
+            requests:
+              cpu: "750m"
+              memory: "640Mi"
