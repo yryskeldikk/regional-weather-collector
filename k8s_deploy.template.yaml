@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.meta.service: $COLLECTOR_NAME
-    name: $COLLECTOR_NAME
+    io.meta.service: regional-weather-collector
+    name: regional-weather-collector
     service: collector
     tier: backend
     eck-log: "yes"
-  name: $COLLECTOR_NAME
+  name: regional-weather-collector
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.meta.service: $COLLECTOR_NAME
-      name: $COLLECTOR_NAME
+      io.meta.service: regional-weather-collector
+      name: regional-weather-collector
       service: collector
       tier: backend
   strategy:
@@ -21,20 +21,63 @@ spec:
   template:
     metadata:
       labels:
-        io.meta.service: $COLLECTOR_NAME
-        name: $COLLECTOR_NAME
+        io.meta.service: regional-weather-collector
+        name: regional-weather-collector
         service: collector
         tier: backend
         eck-log: "yes"
     spec:
       containers:
-        - name: $COLLECTOR_NAME
-          image: $DOCKER_REPO/$COLLECTOR_NAME:$VERSION
+        - name: regional-weather-collector-wind
+          image: $DOCKER_REPO/regional-weather-collector:$VERSION
           imagePullPolicy: "Always"
-          #imagePullPolicy: "IfNotPresent"
           env:
             - name: JAVA_OPTIONS
               value: "-Xmx840m -Xms640m"
+            - name: SPRING_PROFILES_ACTIVE
+              value: $ENV
+            - name: APP_COLLECTOR_ACTIVE
+              value: "wind"
+            - name: SERVER_PORT
+              value: "8050"
+          resources:
+            limits:
+              cpu: "750m"
+              memory: "1680Mi"
+            requests:
+              cpu: "750m"
+              memory: "640Mi"
+        - name: regional-weather-collector-airtemp
+          image: $DOCKER_REPO/regional-weather-collector:$VERSION
+          imagePullPolicy: "Always"
+          env:
+            - name: JAVA_OPTIONS
+              value: "-Xmx840m -Xms640m"
+            - name: SPRING_PROFILES_ACTIVE
+              value: $ENV
+            - name: APP_COLLECTOR_ACTIVE
+              value: "airtemperature"
+            - name: SERVER_PORT
+              value: "8051"
+          resources:
+            limits:
+              cpu: "750m"
+              memory: "1680Mi"
+            requests:
+              cpu: "750m"
+              memory: "640Mi"
+        - name: regional-weather-collector-humidity
+          image: $DOCKER_REPO/regional-weather-collector:$VERSION
+          imagePullPolicy: "Always"
+          env:
+            - name: JAVA_OPTIONS
+              value: "-Xmx840m -Xms640m"
+            - name: SPRING_PROFILES_ACTIVE
+              value: $ENV
+            - name: APP_COLLECTOR_ACTIVE
+              value: "humidity"
+            - name: SERVER_PORT
+              value: "8052"
           resources:
             limits:
               cpu: "750m"

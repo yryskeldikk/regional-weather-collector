@@ -103,7 +103,7 @@ public class WindCollector {
         T get() throws Throwable;
     }
 
-    public List<Wind> collectWindData() throws JsonProcessingException, ApiRetrievalException {
+    public List<Wind> collectWindData() throws JsonProcessingException, ApiRetrievalException, ParseException {
         logger.info("WindCollector: start retrieving data from API ...");
 
         ResponseEntity<String> response = restTemplate.getForEntity(windUrl, String.class);

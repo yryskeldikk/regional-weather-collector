@@ -1,19 +1,29 @@
 # Deployment
-## Set following env variables
+## Build jar 
 ```bash
-export DOCKER_REPO=???
-export COLLECTOR_NAME=??? 
-export VERSION=???
+mvn package
 ```
 
-## Build
-1. Indicate the correct collector in the application.properties
-2. Build the deployment
+## Build Docker Image
+1. Ensure the following variables are defined and assigned.
+   DOCKER_REPO => assigned with the local docker repository IP and Port
+   VERSION => assigned with the gitlab tag found for this project
+   ENV => available values: dm-dev, dev, uat, dr, prod. [ must ensure lower case ]
+
+### Set following env variables
 ```bash
-docker build -t $DOCKER_REPO/$COLLECTOR_NAME:$VERSION
-docker push $DOCKER_REPO/$COLLECTOR_NAME:$VERSION
+export DOCKER_REPO=???
+export VERSION=???
+export ENV=???          # [dm-dev, dev, uat, dr, prod]
+```
+2. Build the docker image and make available for local kubernetes to download
+### Build and push an image
+```bash
+docker build -t $DOCKER_REPO/regional-weather-collector:$VERSION
+docker push $DOCKER_REPO/regional-weather-collector:$VERSION
 ```
 3. Deploy the deployment into k8s
+### Deploy into k8s
 ```bash
 envsubst < k8s_deploy.template.yaml >k8s_deploy.yaml
 kubectl create -f k8s_deploy.yaml
